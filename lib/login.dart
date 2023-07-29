@@ -26,7 +26,7 @@ class _loginState extends State<login> {
 
   TextEditingController phonrCntroller = TextEditingController();
   TextEditingController passwordCntroller = TextEditingController();
-  var userId="";
+  var user_id="";
   var userName="";
 
 
@@ -50,9 +50,9 @@ class _loginState extends State<login> {
       var status = jsonDecode(response.body)["status"];
 
       if(status){
-        userId = jsonDecode(response.body)["user"]["id"].toString();
+        user_id = jsonDecode(response.body)["user"]["id"].toString();
         //userId = jsonDecode(response.body)["user"]["name"].toString();
-        await prefs.setString("id", userId);
+        await prefs.setString("id", user_id);
         await prefs.setBool("KEYLOGIN", true);
         Navigator.pop(context);
         Navigator.push(context,MaterialPageRoute(builder: (context)=> const bottom_nv()));
@@ -236,9 +236,7 @@ class _loginState extends State<login> {
                     _isLoading = true;
                   });
                   await Future.delayed(const Duration(seconds: 2));
-                  setState(() {
-                    _isLoading = false;
-                  });
+
 
 
                   },

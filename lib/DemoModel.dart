@@ -1,5 +1,5 @@
 class DemoModel {
-  final String userId;
+  final int userId;
   final String company_logo;
   final String title;
   final String description;
@@ -8,10 +8,10 @@ class DemoModel {
 
   factory DemoModel.fromJson(Map<String, dynamic> json) {
     return DemoModel(
-      company_logo: json['company_logo'],
       userId: json['id'],
+      company_logo: json['company_logo'],
       title: json['company_name'],
-      description: json['description'],
+      description: json['description']??"",
     );
   }
 }

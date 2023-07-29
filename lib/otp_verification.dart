@@ -29,7 +29,7 @@ class _otp_verificationState extends State<otp_verification> {
   TextEditingController pin6Controller = TextEditingController();
 
   Future<void> verifyOtpPostRequest() async {
-    final url = Uri.parse('http://192.168.1.45/finversify/verifyOtp');
+    final url = Uri.parse('http://192.168.1.57/finversify/verifyOtp');
     final headers = {/*"Content-type": "application/json"*/};
     final map = Map();
 

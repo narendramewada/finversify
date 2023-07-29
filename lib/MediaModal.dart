@@ -1,5 +1,5 @@
 class MediaModel {
-  final int videoId;
+  final String videoId;
   final String title;
   final String url;
   //final String description;

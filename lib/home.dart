@@ -1,3 +1,4 @@
+import 'package:finversify/VideoList.dart';
 import 'package:finversify/recommendationtips.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

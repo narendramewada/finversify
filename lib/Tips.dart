@@ -68,7 +68,7 @@ print('userId');
     addStringToSF();
     Timer(Duration(seconds: 2),(){
       print("This is printed after 2 seconds.");
-      fetchData();
+      getTipsPostRequest();
     });
 
 

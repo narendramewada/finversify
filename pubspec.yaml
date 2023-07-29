@@ -44,8 +44,10 @@ dependencies:
   shared_preferences: ^2.1.1
   mask_text_input_formatter: ^2.4.0
   usage: ^4.1.1
+  mime: ^1.0.0
   google_sign_in: ^5.0.0
   video_player: ^2.2.1
+  youtube_player_flutter: ^8.1.2
 
 
 dev_dependencies:

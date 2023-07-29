@@ -1,11 +1,7 @@
-import 'package:finversify/botton_nv.dart';
-import 'package:finversify/forgot_password.dart';
 import 'package:finversify/login.dart';
-import 'package:finversify/profile.dart';
-import 'package:finversify/sign-up.dart';
-import 'package:finversify/splash.dart';
 import 'package:flutter/material.dart';
 
+import 'botton_nv.dart';
 import 'otp_verification.dart';
 
 void main() {
@@ -26,7 +22,7 @@ class MyApp extends StatelessWidget {
 
         primarySwatch: Colors.orange,
       ),
-      home: const bottom_nv(),
+      home: (),
     );
   }
 }

@@ -2,27 +2,33 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dotted_border/dotted_border.dart';
-import 'package:finversify/api_address.dart';
-import 'package:finversify/updateProfile.dart';
+import 'package:finversify/profile.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:mime/mime.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-class profile extends StatefulWidget {
-  const profile({Key? key}) : super(key: key);
+class updateProfile extends StatefulWidget {
+  const updateProfile({Key? key}) : super(key: key);
 
   @override
-  State<profile> createState() => _profileState();
+  State<updateProfile> createState() => _updateProfileState();
 }
 
-class _profileState extends State<profile> {
+class _updateProfileState extends State<updateProfile> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
   File imageFile = File("");
   var name="";
   var email="";
   var phone="";
   var userId="";
-  var image = "";
+  var image="";
 
   @override
   void initState(){
@@ -54,7 +60,7 @@ class _profileState extends State<profile> {
         name =( json.decode(response.body) ["data"]["name"]);
         email =( json.decode(response.body) ["data"]["email"]);
         phone =( json.decode(response.body) ["data"]["phone"]);
-        //image =( json.decode(response.body) ["data"]["FileImage"]);
+        //image =( json.decode(response.body) ["data"]["imageFile"]);
 
       });
       print(res);
@@ -66,6 +72,67 @@ class _profileState extends State<profile> {
     userId =  prefs.getString("id").toString();
     get("http://192.168.1.57/finversify/getProfile?user_id="+userId);
   }
+  Future<void> updateProfilePostRequest() async {
+final url = Uri.parse('http://192.168.1.57/finversify/updateProfile?user_id='+userId);
+    final headers = {
+"Content-type": "application/json"
+};
+    final map = Map();
+
+
+   // map['image'] = imageFile;
+
+    var postUri = Uri.parse("http://192.168.1.57/finversify/updateProfile");
+    var request = http.MultipartRequest("POST", postUri);
+    request.fields['user_id'] = userId;
+    request.fields['name'] =nameController.text;
+    request.fields['email'] = emailController.text;
+    request.fields['phone'] = phoneController.text;
+
+var mimeTypeData =
+lookupMimeType(imageFile.path, headerBytes: [0xFF, 0xD8])!.split('/');
+var file = await http.MultipartFile.fromPath('image', imageFile.path,
+    contentType: MediaType(mimeTypeData[0], mimeTypeData[1]));
+request.files.add(file);
+    /*request.files.add(MultipartFile.fromBytes(
+        'image',
+       await imageFile.readAsBytes(),
+        filename: "image.${imageFile.path.split(".").last}"
+    ));*/
+    var response = await request.send();
+    if(response.statusCode == 200){
+print(request.toString());
+print(imageFile.path);
+print("imageFile.uri");
+     // var status = jsonDecode(response) ["status"] ;
+
+     // if(status) {
+        Fluttertoast.showToast(
+            msg: "Successfully updated",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0
+        );
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const profile()));
+      }else{
+        Fluttertoast.showToast(
+            msg: "not work",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0
+        );
+      }
+   // }
+    print('Status code: ${response.statusCode}');
+   // print('Body: ${response.body}');
+  }
+
 
 
 
@@ -102,25 +169,22 @@ class _profileState extends State<profile> {
                         //color: Colors.blueGrey,
                         height: 30,width: 180,
                         margin: EdgeInsets.only(top: 5),
-                        child: Text('Profile',style: GoogleFonts.inter(fontSize: 18,fontWeight: FontWeight.w600,
+                        child: Text('Update profile',style: GoogleFonts.inter(fontSize: 18,fontWeight: FontWeight.w600,
                             height: 1.2125,letterSpacing: 0.2,color: Color(0xff000000))),
                         alignment: Alignment.centerLeft,
                       ),
                       SizedBox(width: 66,),
-                      Container(
+                       /* Container(
                         //color: Colors.green,
                           height: 16,width: 50,
-                          child: InkWell(
-                            child: Text('Edit',style: GoogleFonts.inter(fontSize: 14,fontWeight: FontWeight.w400,
-                                height: 1.2125, color: Color(0xff7e8696)),),
-                            onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => updateProfile(),));
-                            },
-                          )
-                      ),
+                          child: Text('Edit',style: GoogleFonts.inter(fontSize: 14,fontWeight: FontWeight.w400,
+                              height: 1.2125, color: Color(0xff7e8696)),)
+                      ),*/
+
                     ],
                   ),
                 ),
+                SizedBox(height: 10,),
                 InkWell(
                   child:imageFile.path.isEmpty?
                   Container(
@@ -145,7 +209,7 @@ class _profileState extends State<profile> {
                     height: 80,width: 80,
 
                   ),
-                  /*onTap: (){
+                  onTap: (){
                     showModalBottomSheet<void>(
                       context: context,
                       shape : RoundedRectangleBorder(
@@ -225,8 +289,7 @@ class _profileState extends State<profile> {
 
 
                                       ),
-                                      onTap: (){_getFromCamera();
-                                      uploadFile();},
+                                      onTap: (){_getFromCamera();},
                                     ),
                                   ),
                                   SizedBox(width: 30,),
@@ -288,7 +351,7 @@ class _profileState extends State<profile> {
 
                       },
                     );
-                  },*/
+                  },
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -323,8 +386,19 @@ class _profileState extends State<profile> {
                   //margin: EdgeInsets.only(left: 21),
                   child: Padding(
                     padding: const EdgeInsets.only(top: 15,left: 18),
-                    child: Text(name,style: GoogleFonts.inter(fontSize: 14,fontWeight: FontWeight.w400,
+                    child: TextField(
+                      keyboardType: TextInputType.text,
+                      controller: nameController,
+
+                    style: GoogleFonts.inter(fontSize: 16,fontWeight: FontWeight.w400,
                         height: 1.2125,color: Color(0xff000000)),textAlign: TextAlign.left,
+                      focusNode: FocusNode(canRequestFocus: bool.hasEnvironment(AutofillHints.name)),
+                      decoration: InputDecoration(
+                        hintText: name,
+                        disabledBorder: InputBorder.none,
+                        border: OutlineInputBorder(borderSide: BorderSide.none),
+
+                      ),
                     ),
                   ),
                 ),
@@ -351,8 +425,24 @@ class _profileState extends State<profile> {
                   //margin: EdgeInsets.only(left: 21),
                   child: Padding(
                     padding: const EdgeInsets.only(top: 15,left: 18),
-                    child: Text(email,style: GoogleFonts.inter(fontSize: 14,fontWeight: FontWeight.w400,
-                        height: 1.2125,color: Color(0xff000000)),textAlign: TextAlign.left,
+                    child: TextField(
+                      keyboardType: TextInputType.emailAddress,
+                      controller: emailController,
+                      onChanged: (value) {
+                        if(emailController.text.isEmpty){
+                          Text(email);
+                        }
+
+                      },
+                      style: GoogleFonts.inter(fontSize: 16,fontWeight: FontWeight.w400,
+                          height: 1.2125,color: Color(0xff000000)),textAlign: TextAlign.left,
+                      focusNode: FocusNode(canRequestFocus: bool.hasEnvironment(email)),
+                      decoration: InputDecoration(
+                        hintText: email,
+                        disabledBorder: InputBorder.none,
+                        border: OutlineInputBorder(borderSide: BorderSide.none),
+
+                      ),
                     ),
                   ),
                 ),
@@ -379,27 +469,41 @@ class _profileState extends State<profile> {
                   //margin: EdgeInsets.only(left: 21),
                   child: Padding(
                     padding: const EdgeInsets.only(top: 15,left: 18),
-                    child: Text(phone,style: GoogleFonts.inter(fontSize: 14,fontWeight: FontWeight.w400,
-                        height: 1.2125,color: Color(0xff000000)),textAlign: TextAlign.left,
+                    child: TextField(
+                      keyboardType: TextInputType.phone,
+                      controller: phoneController,
+                      style: GoogleFonts.inter(fontSize: 16,fontWeight: FontWeight.w400,
+                          height: 1.2125,color: Color(0xff000000)),textAlign: TextAlign.left,
+                      focusNode: FocusNode(canRequestFocus: bool.hasEnvironment(phone)),
+                      decoration: InputDecoration(
+                        hintText: phone,
+                        disabledBorder: InputBorder.none,
+                        border: OutlineInputBorder(borderSide: BorderSide.none),
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(height: 50,),
-                Container(
-                  height: 50,
-                  width: 320,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Color(0xffff9700)),
-                  //margin: EdgeInsets.only(left: 21),
-                  child: Center(
-                    child: Text('Update',
-                        style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            height: 1.2125,
-                            color: Color(0xffffffff))),
+                InkWell(
+                  child: Container(
+                    height: 50,
+                    width: 320,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Color(0xffff9700)),
+                    //margin: EdgeInsets.only(left: 21),
+                    child: Center(
+                      child: Text('Update',
+                          style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              height: 1.2125,
+                              color: Color(0xffffffff))),
+                    ),
                   ),
+                  onTap: (){
+                    updateProfilePostRequest();
+                  },
                 ),
 
 

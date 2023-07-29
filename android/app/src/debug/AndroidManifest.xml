@@ -5,4 +5,14 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    defaultConfig {
+    // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+    applicationId "com.example.my_app"
+    minSdkVersion 17
+    targetSdkVersion 30
+    versionCode flutterVersionCode.toInteger()
+    versionName flutterVersionName
+    }
+
 </manifest>
+

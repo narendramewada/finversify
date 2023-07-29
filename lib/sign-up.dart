@@ -23,7 +23,7 @@ class _signupState extends State<signup> {
   TextEditingController confirmPasswordCntroller = TextEditingController();
 
   Future<void> registrationPostRequest() async {
-    final url = Uri.parse('http://192.168.1.45/finversify/register');
+    final url = Uri.parse('http://192.168.1.57/finversify/register');
     final headers = { /*"Content-type": "application/json"*/
     };
     final map = Map();

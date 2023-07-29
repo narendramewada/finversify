@@ -4,7 +4,7 @@ import 'package:finversify/api_address.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
-import 'package:video_player/video_player.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import 'MediaModal.dart';
 class media extends StatefulWidget {
@@ -15,7 +15,9 @@ class media extends StatefulWidget {
 }
 
 class _mediaState extends State<media> {
-  late VideoPlayerController controller;
+  final url = "";
+  String videoId = "videoId";
+  late YoutubePlayerController _controller;
 
   //var list = <dynamic> [];
   var list = <MediaModel>[];
@@ -34,6 +36,7 @@ class _mediaState extends State<media> {
 
        Iterable jsonResponse = json.decode(response.body)['data'];
        list = jsonResponse.map((data) => MediaModel.fromJson(data)).toList();
+       //print("list == "+list.length.toString());
       });
 
     }
@@ -44,23 +47,33 @@ class _mediaState extends State<media> {
   }
 
 
+
   @override
   void initState() {
-   // loadVideoPlayer();
-    super.initState();
     getMediaAppearance();
+    //final videoId = YoutubePlayer.convertUrlToId('url');
+    /*_controller = YoutubePlayerController(
+        initialVideoId: "videoId",
+      flags: YoutubePlayerFlags(
+        autoPlay: false,
+        mute: true,
+
+      )
+    );*/
+    super.initState();
   }
 
-  loadVideoPlayer(String url){
-    controller = VideoPlayerController.network(url);
-    controller.addListener(() {
+  /*loadVideoPlayer(String url){
+    _controller = YoutubePlayerController.network(url);
+    _controller.addListener(() {
       setState(() {});
     });
-    controller.initialize().then((value){
+    _controller.initialize().then((value){
       setState(() {});
     });
 
-  }
+  }*/
+
   @override
   Widget build(BuildContext context) {
    //var arrImage = ['assets/media1.png','assets/media2.png', 'assets/media4.png','assets/media5.png'];
@@ -83,34 +96,49 @@ class _mediaState extends State<media> {
 
               ), itemBuilder: (context, index) {
            //  loadVideoPlayer(list[index].url);
-                controller = VideoPlayerController.network(list[index].url);
-              return Column(
+                //_controller = YoutubePlayerController.network(list[index].url);
+              return
+              Column(
                 children: [
                   Container(
                     decoration: BoxDecoration(
-
                         borderRadius: BorderRadius.circular(10),
-                        color: Colors.white
+                        color: Colors.white,
                     ),
                     height: 160,
                     width: 160,
                     child: Stack(
                       children: [
-                        AspectRatio(aspectRatio: controller.value.aspectRatio,
-                        child: VideoPlayer(controller),
-                        ),
                         Center(
+                          child: YoutubePlayer(
+                            controller: YoutubePlayerController(
+                            initialVideoId: list[index].videoId,
+                              flags: YoutubePlayerFlags(
+                                autoPlay: true,
+                                mute: true,
+                                showLiveFullscreenButton: true,
+
+                              )
+
+                         ),
+                            onReady: (){
+                              print('Player is ready');
+                            },
+                          ),
+                        ),
+
+                        /*Center(
                           child: Padding(
                             padding: const EdgeInsets.only(right: 60.0,left: 60),
                             child: InkWell(
                               child: SizedBox(
-                                child: Icon(controller.value.isPlaying? Icons.pause:Icons.play_arrow),
+                                child: Icon(_controller.value.isPlaying? Icons.pause:Icons.play_arrow),
                               ),
                               onTap: (){
-                                if(controller.value.isPlaying){
-                                  controller.pause();
+                                if(_controller.value.isPlaying){
+                                  _controller.pause();
                                 }else {
-                                  controller.play();
+                                  _controller.play();
                                 }
                                 setState(() {
 
@@ -119,7 +147,7 @@ class _mediaState extends State<media> {
 
                             ),
                           ),
-                        ),
+                        ),*/
 
 
 
